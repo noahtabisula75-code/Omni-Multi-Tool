@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { incrementStat } from "@/components/Dashboard";
 import { motion, AnimatePresence } from "motion/react";
 
 interface RobloxRecord {
@@ -53,6 +54,8 @@ export function RobloxLookup() {
       }
       const data = await response.json();
       setRecord(data);
+      // Increment global lookup stat
+      await incrementStat("totalLookups");
     } catch (err: any) {
       console.error("Lookup error:", err);
       setError(err.message || "An unexpected error occurred");

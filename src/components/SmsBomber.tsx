@@ -19,6 +19,7 @@ import {
   BarChart3
 } from "lucide-react";
 import axios from "axios";
+import { incrementStat } from "@/components/Dashboard";
 import { motion, AnimatePresence } from "motion/react";
 
 interface LogEntry {
@@ -140,6 +141,8 @@ export function SmsBomber() {
           
           if (response.data.success) {
             addLog(service, "success", `OTP request sent successfully (Status: ${response.data.status})`);
+            // Increment global SMS stat
+            await incrementStat("totalSmsSent");
           } else {
             addLog(service, "error", `Failed to send OTP: ${response.data.error}`);
           }

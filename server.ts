@@ -4,8 +4,50 @@ import path from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
 
+import fs from "fs";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const STATS_FILE = path.join(__dirname, "stats.json");
+
+// Load or initialize stats
+let globalStats = {
+  totalUsers: 0,
+  totalLookups: 0,
+  totalSmsSent: 0,
+  robloxApiStatus: "Working",
+  encryptorStatus: "Working",
+  smsBomberStatus: "Working"
+};
+
+let uniqueUsers = new Set<string>();
+
+function loadStats() {
+  try {
+    if (fs.existsSync(STATS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(STATS_FILE, "utf-8"));
+      globalStats = { ...globalStats, ...data.stats };
+      uniqueUsers = new Set(data.uniqueUsers || []);
+    }
+  } catch (error) {
+    console.error("Error loading stats:", error);
+  }
+}
+
+function saveStats() {
+  try {
+    const data = {
+      stats: globalStats,
+      uniqueUsers: Array.from(uniqueUsers)
+    };
+    fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("Error saving stats:", error);
+  }
+}
+
+loadStats();
 
 const USERS_API = "https://users.roblox.com";
 const FRIENDS_API = "https://friends.roblox.com";
@@ -20,6 +62,31 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
+
+  // Stats API
+  app.get("/api/stats", (req, res) => {
+    res.json(globalStats);
+  });
+
+  app.post("/api/stats/increment", (req, res) => {
+    const { field, userId } = req.body;
+    
+    if (field === "totalUsers" && userId) {
+      if (!uniqueUsers.has(userId)) {
+        uniqueUsers.add(userId);
+        globalStats.totalUsers++;
+        saveStats();
+      }
+    } else if (field === "totalLookups") {
+      globalStats.totalLookups++;
+      saveStats();
+    } else if (field === "totalSmsSent") {
+      globalStats.totalSmsSent++;
+      saveStats();
+    }
+    
+    res.json({ success: true, stats: globalStats });
+  });
 
   // Roblox API Proxy
   app.get("/api/roblox/lookup/:username", async (req, res) => {
