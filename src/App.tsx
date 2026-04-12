@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { RobloxLookup } from "@/components/RobloxLookup";
 import { PythonEncryptor } from "@/components/PythonEncryptor";
+import { SmsBomber } from "@/components/SmsBomber";
+import { OfficialChannels } from "@/components/OfficialChannels";
+import { TelegramPopup } from "@/components/TelegramPopup";
 import { 
   Cpu,
   Globe,
@@ -90,10 +93,14 @@ export default function App() {
             </div>
           </div>
         );
+      case "official-channels":
+        return <OfficialChannels />;
       case "roblox-lookup":
         return <RobloxLookup />;
       case "python-encryptor":
         return <PythonEncryptor />;
+      case "sms-bomber":
+        return <SmsBomber />;
       default:
         return null;
     }
@@ -133,6 +140,7 @@ export default function App() {
           </AnimatePresence>
         </div>
       </main>
+      <TelegramPopup />
     </div>
   );
 }

@@ -10,7 +10,9 @@ import {
   UserSearch,
   LayoutDashboard,
   Shield,
-  Activity
+  Activity,
+  Send,
+  Bomb
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,6 +31,7 @@ const SECTIONS = [
     title: "Main",
     items: [
       { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
+      { id: "official-channels", name: "Official Channels", icon: Send },
     ]
   },
   {
@@ -36,6 +39,7 @@ const SECTIONS = [
     items: [
       { id: "roblox-lookup", name: "Roblox Look Up", icon: UserSearch },
       { id: "python-encryptor", name: "Python Encryptor", icon: Shield },
+      { id: "sms-bomber", name: "SMS Bomber", icon: Bomb },
     ]
   }
 ];
