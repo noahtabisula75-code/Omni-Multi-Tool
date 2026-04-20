@@ -105,7 +105,8 @@ export function SmsBomber() {
       return;
     }
 
-    const count = parseInt(requestCount);
+    const countInput = parseInt(requestCount);
+    const count = Math.min(countInput, 10);
     if (isNaN(count) || count <= 0) {
       addLog("System", "error", "Invalid request count.");
       return;
@@ -198,14 +199,19 @@ export function SmsBomber() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="count">Request Count</Label>
+              <Label htmlFor="count">Request Count (Max 10)</Label>
               <Input 
                 id="count"
                 type="number"
                 placeholder="10" 
+                max={10}
                 className="bg-black/40 border-primary/20 focus:border-primary"
                 value={requestCount}
-                onChange={(e) => setRequestCount(e.target.value)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value);
+                  if (val > 10) setRequestCount("10");
+                  else setRequestCount(e.target.value);
+                }}
                 disabled={isBombing}
               />
             </div>

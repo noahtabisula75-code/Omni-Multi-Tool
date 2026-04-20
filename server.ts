@@ -18,6 +18,7 @@ let globalStats = {
   totalSmsSent: 0,
   robloxApiStatus: "Working",
   encryptorStatus: "Working",
+  decoderStatus: "Working",
   smsBomberStatus: "Working"
 };
 

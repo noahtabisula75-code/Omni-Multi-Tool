@@ -10,6 +10,7 @@ import {
   UserSearch,
   LayoutDashboard,
   Shield,
+  Unlock,
   Activity,
   Send,
   Bomb
@@ -39,6 +40,7 @@ const SECTIONS = [
     items: [
       { id: "roblox-lookup", name: "Roblox Look Up", icon: UserSearch },
       { id: "python-encryptor", name: "Python Encryptor", icon: Shield },
+      { id: "python-decoder", name: "Python Decoder", icon: Unlock },
       { id: "sms-bomber", name: "SMS Bomber", icon: Bomb },
     ]
   }
@@ -55,7 +57,7 @@ export function Sidebar({ activeTool, setActiveTool }: SidebarProps) {
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">
             <Terminal className="text-black w-5 h-5" />
           </div>
-          <span className="font-bold text-lg whitespace-nowrap">OMNI TOOL</span>
+          <span className="font-bold text-lg whitespace-nowrap">OMNI MULTI TOOL SERVICE</span>
         </div>
         {!mobile && (
           <Button 

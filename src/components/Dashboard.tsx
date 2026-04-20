@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   XCircle,
   Shield,
+  Unlock,
   Bomb,
   Zap,
   Cpu
@@ -21,6 +22,7 @@ interface Stats {
   totalSmsSent: number;
   robloxApiStatus: "Working" | "Down";
   encryptorStatus: "Working" | "Down";
+  decoderStatus: "Working" | "Down";
   smsBomberStatus: "Working" | "Down";
 }
 
@@ -98,6 +100,7 @@ export function Dashboard() {
   const toolStatuses = [
     { name: "Roblox LookUp", status: displayStats.robloxApiStatus, icon: Search },
     { name: "Python Encryptor", status: displayStats.encryptorStatus, icon: Shield },
+    { name: "Python Decoder", status: displayStats.decoderStatus, icon: Unlock },
     { name: "SMS Bomber", status: displayStats.smsBomberStatus, icon: Bomb },
     { name: "System API", status: "Working" as const, icon: Zap },
   ];
